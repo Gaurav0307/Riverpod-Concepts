@@ -34,54 +34,50 @@ class HomeScreen extends ConsumerWidget {
         foregroundColor: Colors.black87,
         backgroundColor: Colors.blue.shade100,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // Consumer widget allows rebuilding only specific parts of the widget tree
-            // when the watched providers change
-            Consumer(
-              builder: (context, ref, child) {
-                // Using ref.watch to listen to counterProvider
-                // The widget will rebuild whenever the counter changes
-                final counter = ref.watch(counterProvider);
-                return Text(
-                  '$counter',
-                  style: const TextStyle(
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    // Modifying state using .notifier and .state
-                    // This will trigger a rebuild of widgets watching counterProvider
-                    ref.read(counterProvider.notifier).state--;
-                  },
-                  tooltip: 'Decrement',
-                  child: const Icon(Icons.remove),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // Consumer widget allows rebuilding only specific parts of the widget tree
+          // when the watched providers change
+          Consumer(
+            builder: (context, ref, child) {
+              // Using ref.watch to listen to counterProvider
+              // The widget will rebuild whenever the counter changes
+              final counter = ref.watch(counterProvider);
+              return Text(
+                '$counter',
+                style: const TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
                 ),
-                FloatingActionButton(
-                  onPressed: () {
-                    // Alternative way to update state using the update method
-                    // This is equivalent to the decrement operation above
-                    ref
-                        .read(counterProvider.notifier)
-                        .update((state) => state++);
-                  },
-                  tooltip: 'Increment',
-                  child: const Icon(Icons.add),
-                ),
-              ],
-            ),
-          ],
-        ),
+              );
+            },
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  // Modifying state using .notifier and .state
+                  // This will trigger a rebuild of widgets watching counterProvider
+                  ref.read(counterProvider.notifier).state--;
+                },
+                tooltip: 'Decrement',
+                child: const Icon(Icons.remove),
+              ),
+              FloatingActionButton(
+                onPressed: () {
+                  // Alternative way to update state using the update method
+                  // This is equivalent to the decrement operation above
+                  ref.read(counterProvider.notifier).update((state) => state++);
+                },
+                tooltip: 'Increment',
+                child: const Icon(Icons.add),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
