@@ -3,14 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:riverpod_concepts/screen1.dart';
 
-/// StateProvider with a complex state object (AppState)
-/// - Manages multiple related pieces of state (slider value and enabled state)
-/// - Uses a custom state class with copyWith pattern for immutable updates
-/// - Initial state sets slider to 0.1 and enabled to true
-final appStateProvider = StateProvider<AppState>(
-  (Ref ref) => AppState(slider: 0.1, enabled: true),
-);
-
 /// A demo screen showing advanced Riverpod state management
 /// - Demonstrates StateProvider with complex state
 /// - Shows how to use select() for optimized rebuilds
@@ -44,7 +36,7 @@ class HomeScreen extends ConsumerWidget {
               // Using select to only listen to the 'enabled' property
               // This prevents unnecessary rebuilds when other properties change
               final enabled = ref.watch(
-                appStateProvider.select((state) => state.enabled),
+                appStateNotifierProvider.select((state) => state.enabled),
               );
 
               return Switch(
@@ -52,13 +44,10 @@ class HomeScreen extends ConsumerWidget {
                 onChanged: (value) {
                   // Get the StateController for appStateProvider
                   final appStateController = ref.read(
-                    appStateProvider.notifier,
+                    appStateNotifierProvider.notifier,
                   );
 
-                  // Update state immutably using copyWith
-                  appStateController.state = appStateController.state.copyWith(
-                    enabled: value,
-                  );
+                  appStateController.toggleSwitch(value);
                 },
                 activeThumbColor: Colors.green,
               );
@@ -76,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
               // Using select to only listen to the 'slider' property
               // This is more efficient than watching the entire state object
               final slider = ref.watch(
-                appStateProvider.select((state) => state.slider),
+                appStateNotifierProvider.select((state) => state.slider),
               );
 
               return Column(
@@ -98,12 +87,10 @@ class HomeScreen extends ConsumerWidget {
                     onChanged: (value) {
                       // Get the StateController for appStateProvider
                       final appStateController = ref.read(
-                        appStateProvider.notifier,
+                        appStateNotifierProvider.notifier,
                       );
 
-                      // Update state immutably using copyWith
-                      appStateController.state = appStateController.state
-                          .copyWith(slider: value);
+                      appStateController.updateSlider(value);
                     },
                     activeColor: Colors.black54,
                     thumbColor: Colors.red,
@@ -115,6 +102,48 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+/// A Riverpod StateNotifierProvider that manages the application state.
+/// - Manages an instance of AppStateNotifier
+/// - Automatically handles the notifier's lifecycle
+/// - Provides a way to access and modify the state throughout the widget tree
+/// - Uses generics to specify the notifier type (AppStateNotifier) and state type (AppState)
+final appStateNotifierProvider =
+    StateNotifierProvider<AppStateNotifier, AppState>((Ref ref) {
+      // Create and return a new instance of AppStateNotifier
+      // This will be called only once and the instance will be kept alive
+      // as long as there are listeners
+      return AppStateNotifier();
+    });
+
+/// A Riverpod StateNotifier that manages the application state.
+/// - Holds the current state (AppState)
+/// - Provides methods to update the state in an immutable way
+/// - Notifies listeners when the state changes
+class AppStateNotifier extends StateNotifier<AppState> {
+  /// Initialize the notifier with default state
+  /// - slider: Initial value of 0.1 (10%)
+  /// - enabled: Initially set to false
+  AppStateNotifier() : super(AppState(slider: 0.1, enabled: false));
+
+  /// Updates the slider value in the state
+  /// - Creates a new state with the updated slider value
+  /// - Triggers a rebuild of widgets that depend on this state
+  void updateSlider(double slider) {
+    // Using copyWith pattern to create a new state with updated slider value
+    // This maintains immutability of the state
+    state = state.copyWith(slider: slider);
+  }
+
+  /// Toggles the enabled state
+  /// - Creates a new state with the updated enabled value
+  /// - Triggers a rebuild of widgets that depend on this state
+  void toggleSwitch(bool enabled) {
+    // Using copyWith pattern to create a new state with updated enabled value
+    // This maintains immutability of the state
+    state = state.copyWith(enabled: enabled);
   }
 }
 
