@@ -84,7 +84,7 @@ final todoNotifierProvider = StateNotifierProvider<TodoNotifier, TodoState>(
 );
 
 class TodoNotifier extends StateNotifier<TodoState> {
-  TodoNotifier() : super(TodoState([]));
+  TodoNotifier() : super(TodoState(todos: []));
 
   void addTodo({String title = "", bool isDone = false}) {
     final todo = Todo(
@@ -93,25 +93,32 @@ class TodoNotifier extends StateNotifier<TodoState> {
       isDone: isDone,
     );
     state.todos.add(todo);
-    state = TodoState(state.todos);
+    // state = TodoState(todos: state.todos);
+    state = state.copyWith(state.todos);
   }
 
   void removeTodo(int id) {
     state.todos.removeWhere((todo) => todo.id == id);
-    state = TodoState(state.todos);
+    // state = TodoState(todos: state.todos);
+    state = state.copyWith(state.todos);
   }
 
   void markDone(int id, bool isDone) {
     int index = state.todos.indexWhere((todo) => todo.id == id);
     state.todos[index] = state.todos[index].copyWith(isDone: isDone);
-    state = TodoState(state.todos);
+    // state = TodoState(todos: state.todos);
+    state = state.copyWith(state.todos);
   }
 }
 
 class TodoState {
   final List<Todo> todos;
 
-  TodoState(this.todos);
+  const TodoState({required this.todos});
+
+  TodoState copyWith(List<Todo>? todos) {
+    return TodoState(todos: todos ?? this.todos);
+  }
 }
 
 class Todo {
