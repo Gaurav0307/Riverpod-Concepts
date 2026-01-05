@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:riverpod_concepts/screen1.dart';
+import 'package:riverpod_concepts/screens/screen1.dart';
 
 /// StateProvider with a complex state object (AppState)
 /// - Manages multiple related pieces of state (slider value and enabled state)
