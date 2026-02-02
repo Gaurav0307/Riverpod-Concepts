@@ -104,10 +104,21 @@ class TodoNotifier extends StateNotifier<TodoState> {
   }
 
   void markDone(int id, bool isDone) {
-    int index = state.todos.indexWhere((todo) => todo.id == id);
-    state.todos[index] = state.todos[index].copyWith(isDone: isDone);
+    // final index = state.todos.indexWhere((todo) => todo.id == id);
+    // if (index == -1) return;
+    //
+    // final updatedTodos = [...state.todos];
+    // updatedTodos[index] = updatedTodos[index].copyWith(isDone: isDone);
+
+    final updatedTodos = state.todos.map((todo) {
+      if (todo.id == id) {
+        return todo.copyWith(isDone: isDone);
+      }
+      return todo;
+    }).toList();
+
     // state = TodoState(todos: state.todos);
-    state = state.copyWith(state.todos);
+    state = state.copyWith(updatedTodos);
   }
 }
 
